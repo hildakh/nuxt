@@ -3,16 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt-ts",
-    "build": "nuxt-ts build",
-    "start": "nuxt-ts start",
-    "generate": "nuxt-ts generate",
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
     "test": "jest"
   },
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
     "core-js": "^3.6.5",
+    "dotenv": "^8.2.0",
     "nuxt": "^2.14.6",
+    "storyblok-nuxt": "^1.3.0",
     "vuesax": "^4.0.1-alpha.25"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^26.5.0",
     "jest": "^26.5.0",
+    "tailwindcss": "^1.9.6",
     "ts-jest": "^26.4.1",
     "vue-jest": "^3.0.4"
   }
