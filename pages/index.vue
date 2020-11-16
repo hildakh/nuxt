@@ -1,14 +1,12 @@
 <template>
-  <div class="container">
-    <div>
-      <header class="content-logos">
-        <logo />
-      </header>
-      <h1 class="title">
-        Hilda's Multilanguage Nuxt Website
-      </h1>
-    </div>
-  </div>
+  <section>
+    <component
+      v-if="story.content.component"
+      :key="story.content._uid"
+      :blok="story.content"
+      :is="story.content.component"
+    />
+  </section>
 </template>
 
 <script>
@@ -17,71 +15,56 @@ import VuesaxLogo from "~/components/VuesaxLogo.vue";
 import "@/assets/css/tailwind.css";
 
 export default {
-  components: {
-    Logo,
-    VuesaxLogo
+  data() {
+    return {
+      story: { content: {} }
+    };
+  },
+  mounted() {
+    // Use the input event for instant update of content
+    this.$storybridge.on("input", event => {
+      if (event.story.id === this.story.id) {
+        this.story.content = event.story.content;
+      }
+    });
+    // Use the bridge to listen the events
+    this.$storybridge.on(["published", "change"], event => {
+      // window.location.reload()
+      this.$nuxt.$router.go({
+        path: this.$nuxt.$router.currentRoute,
+        force: true
+      });
+    });
+  },
+  asyncData(context) {
+    // // This what would we do in real project
+    // const version = context.query._storyblok || context.isDev ? 'draft' : 'published'
+    // const fullSlug = (context.route.path == '/' || context.route.path == '') ? 'home' : context.route.path
+
+    // Load the JSON from the API - loadig the home content (index page)
+    return context.app.$storyapi
+      .get("cdn/stories/home", {
+        version: "draft"
+      })
+      .then(res => {
+        return res.data;
+      })
+      .catch(res => {
+        if (!res.response) {
+          console.error(res);
+          context.error({
+            statusCode: 404,
+            message: "Failed to receive content form api"
+          });
+        } else {
+          console.log("hello");
+          console.error(res.response.data);
+          context.error({
+            statusCode: res.response.status,
+            message: res.response.data
+          });
+        }
+      });
   }
 };
 </script>
-
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 55px;
-  color: #35495e;
-  letter-spacing: 1px;
-  text-transform: capitalize;
-  margin: 25px 0;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 1.1rem;
-  color: #526488;
-  word-spacing: 2px;
-  padding-bottom: 15px;
-  max-width: 600px;
-}
-
-.subtitle a {
-  font-weight: 500;
-  color: inherit;
-}
-
-.links {
-  padding-top: 15px;
-  margin-bottom: 20px;
-}
-
-.content-logos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 500px;
-}
-
-.plus {
-  font-size: 2.5rem;
-  margin: 15px;
-  color: #35495e;
-}
-
-.h3 {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 400;
-  margin: 10px;
-}
-</style>
